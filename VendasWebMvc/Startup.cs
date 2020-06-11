@@ -37,7 +37,8 @@ namespace VendasWebMvc
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<VendasWebMvcContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("VendasWebMvcContext")));
+                    options.UseMySql(Configuration.GetConnectionString("VendasWebMvcContext"), builder =>
+                                      builder.MigrationsAssembly("VendasWebMvc")));  // Alterado para MySQL assim como os paramentros (Vendas ...)
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
