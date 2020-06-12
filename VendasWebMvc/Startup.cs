@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using VendasWebMvc.Models;
 using VendasWebMvc.Data;
+using VendasWebMvc.Services;
+
 
 namespace VendasWebMvc
 {
@@ -42,7 +44,7 @@ namespace VendasWebMvc
                                       builder.MigrationsAssembly("VendasWebMvc")));  // Alterado para MySQL assim como os paramentros (Vendas ...)
 
             services.AddScoped<SeedingService>();  // Registo do SeedingService no sistema de injeção de dependencias da Aplicação.
-
+            services.AddScoped<SellerService>();   // Registo do SellerService no sistema de injeção de dependencias da Aplicação.
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
