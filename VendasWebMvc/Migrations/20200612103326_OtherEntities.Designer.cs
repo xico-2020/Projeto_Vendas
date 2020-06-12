@@ -48,7 +48,7 @@ namespace VendasWebMvc.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("SalesRecords");
+                    b.ToTable("SalesRecord");
                 });
 
             modelBuilder.Entity("VendasWebMvc.Models.Seller", b =>

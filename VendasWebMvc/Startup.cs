@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using VendasWebMvc.Models;
+using VendasWebMvc.Data;
 
 namespace VendasWebMvc
 {
@@ -39,16 +40,20 @@ namespace VendasWebMvc
             services.AddDbContext<VendasWebMvcContext>(options =>
                     options.UseMySql(Configuration.GetConnectionString("VendasWebMvcContext"), builder =>
                                       builder.MigrationsAssembly("VendasWebMvc")));  // Alterado para MySQL assim como os paramentros (Vendas ...)
+
+            services.AddScoped<SeedingService>();  // Registo do SeedingService no sistema de injeção de dependencias da Aplicação.
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)  // Adicionado SeedingService. Como já está registado em cima na Injeção de Dependencias reconhece automatico.
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment())   // Se estiver no perfil de desenvolvimento ...
             {
                 app.UseDeveloperExceptionPage();
+                seedingService.Seed(); // Chamada metodo Seed em que é criada a Base Dado, caso ainda não esteja.
             }
-            else
+            else // Se estiver no perfil de produção ...
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
