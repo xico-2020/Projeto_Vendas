@@ -19,5 +19,11 @@ namespace VendasWebMvc.Services
         {
             return _context.Seller.ToList(); // Acede à tabela de vendedores e converte para uma lista.
         }
+
+        public void Insert(Seller obj)  // Para inserir o Vendedor na Base de Dados
+        {
+            _context.Add(obj);
+            _context.SaveChanges();
+        }
     }
 }
