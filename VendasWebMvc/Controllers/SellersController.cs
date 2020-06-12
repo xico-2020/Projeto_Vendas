@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VendasWebMvc.Models;
+using VendasWebMvc.Models.ViewModels;
 using VendasWebMvc.Services;
 
 namespace VendasWebMvc.Controllers
@@ -11,10 +12,12 @@ namespace VendasWebMvc.Controllers
     public class SellersController : Controller
     {
         private readonly SellerService _sellerService;
+        private readonly DepartmentService _departmentService;
 
-        public SellersController(SellerService sellerService)  // Construtor
+        public SellersController(SellerService sellerService, DepartmentService departmentService)  // Construtor
         {
             _sellerService = sellerService;
+            _departmentService = departmentService;
         }
         public IActionResult Index()  // Tem que chamar a FindAll do SellerService. Para isso crio acima uma dependencia para ele.
         {
@@ -24,7 +27,9 @@ namespace VendasWebMvc.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            var departments = _departmentService.FindAll();
+            var viewModel = new SellerFormViewModel { Departments = departments }; // Inicia o SellerFormViewModels com a Lista de Departamentos da linha anterior.
+            return View(viewModel);  // Quando o Ecran de Registo de Vendas pela primeira vez, já tem os dados dos Departamentos existentes.  
         }
 
         [HttpPost]    // Indica que  o Create vai ser uma ação de Post e não de Get.

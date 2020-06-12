@@ -22,7 +22,6 @@ namespace VendasWebMvc.Services
 
         public void Insert(Seller obj)  // Para inserir o Vendedor na Base de Dados
         {
-            obj.Department = _context.Department.First();
             _context.Add(obj);
             _context.SaveChanges();
         }
