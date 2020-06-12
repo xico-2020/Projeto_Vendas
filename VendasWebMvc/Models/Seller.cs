@@ -12,6 +12,7 @@ namespace VendasWebMvc.Models
         public DateTime BirthDate { get; set; }
         public double Salary { get; set; }
         public Department Department { get; set; }  // Para ler a Classe Department.
+        public int DepartmentId { get; set; }  // Para garantir ao EntityFramework que vai existir um Id de Departamento, uma vez que um int não pode ser nulo. Declarando DepartmentId o FrameWork consegue relacionar com o Id de Seller e criar a BD corretamente.
         public ICollection<SalesRecord> Sales { get; set; } = new List<SalesRecord>(); // Ligação à Classe SalesRecord(relação tem muitos...)
 
 
