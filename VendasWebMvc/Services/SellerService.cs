@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VendasWebMvc.Models;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace VendasWebMvc.Services
 {
@@ -28,7 +30,8 @@ namespace VendasWebMvc.Services
 
         public Seller FindById(int id)
         {
-            return _context.Seller.FirstOrDefault(obj => obj.Id == id);
+            return _context.Seller.Include(obj => obj.Department).FirstOrDefault(obj => obj.Id == id);  // Include(obj => obj.Department -> Para que na View Seller em Details seja possivel ver o Departamento.
+                                                    // Com o Include o EntityFrameWork junta os dados de duas tabelas.   
         }
 
         public void Remove(int id)
