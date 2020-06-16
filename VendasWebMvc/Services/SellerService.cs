@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using VendasWebMvc.Models;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using VendasWebMvc.Services.Exceptions;
+using VendasWebMvc.Services.Exceptions;
 
 namespace VendasWebMvc.Services
 {
@@ -39,6 +41,25 @@ namespace VendasWebMvc.Services
             var obj = _context.Seller.Find(id);
             _context.Seller.Remove(obj);
             _context.SaveChanges();
+        }
+
+        public void Update(Seller obj)  // recebe um objeto do tipo Seller
+        {   
+            if (!_context.Seller.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
+            {
+                throw new NotFoundException("Id not found");
+            }
+            try
+            {
+                _context.Update(obj);  // Atualiza o objeto Seller na Base de Dados
+                _context.SaveChanges(); // Guarda as alterações.
+
+            }
+            catch(DbConcurrecyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
+                                            // Organização por camadas. Tratamento a nível se serviço. O Controlador(SellersController)  só trata a exceção lançada pelo serviço.
+            {
+                throw new DbConcurrecyException(e.Message);
+            }
         }
     }
 }

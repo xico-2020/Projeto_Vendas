@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using VendasWebMvc.Models;
 using VendasWebMvc.Models.ViewModels;
 using VendasWebMvc.Services;
+using VendasWebMvc.Services.Exceptions;
 
 namespace VendasWebMvc.Controllers
 {
@@ -78,6 +79,50 @@ namespace VendasWebMvc.Controllers
             }
 
             return View(obj);
+        }
+
+        public IActionResult Edit(int? id)  // Este método serve para abrir o ecran de vendedor para o editar.
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var obj = _sellerService.FindById(id.Value);  //  obj recebe o _sellerService passando como argumento o id
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
+            List<Department> departments = _departmentService.FindAll(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
+            SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments }; // Preencho o SellerFormViewModel com os dados de Seller do obj que acima fomos ler à Base de Dados. Preencho tambem os Departamentos.
+            return View(viewModel);  // retornar a View preenchida com os dados de viewModel.
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Seller seller)
+        {
+            if (id != seller.Id)  // Testar se o id passado no método é diferente do vendedor. O Id do vendedor não pode ser |= do do URL da requisição.
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                _sellerService.Update(seller);  // Atualiza o vendedor
+                return RedirectToAction(nameof(Index));  // Redirecionar para a página inicial que é a Index.
+
+            }
+            catch (NotFoundException)
+            {
+                return NotFound();
+            }
+
+            catch (DbConcurrecyException)
+            {
+                return BadRequest();
+            }
         }
     }
 }
