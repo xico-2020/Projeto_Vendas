@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 using VendasWebMvc.Models;
 using VendasWebMvc.Models.ViewModels;
 using VendasWebMvc.Services;
@@ -41,17 +43,17 @@ namespace VendasWebMvc.Controllers
             return RedirectToAction(nameof(Index));  // REdirecionar para a ação Index que é a que vai mostrar o Ecran de Vendedores.
         }
 
-        public IActionResult Delete(int? id)  // int? -> Indica que é opcional.
+        public IActionResult Delete(int? id)  // int? -> Indica que é opcional. 
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new {message =  "Id not provided"} );
             }
 
             var obj = _sellerService.FindById(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -69,13 +71,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             return View(obj);
@@ -85,13 +87,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
             var obj = _sellerService.FindById(id.Value);  //  obj recebe o _sellerService passando como argumento o id
             if (obj == null)
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
             List<Department> departments = _departmentService.FindAll(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
@@ -105,7 +107,7 @@ namespace VendasWebMvc.Controllers
         {
             if (id != seller.Id)  // Testar se o id passado no método é diferente do vendedor. O Id do vendedor não pode ser |= do do URL da requisição.
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });  // Id não coincide
             }
 
             try
@@ -114,15 +116,32 @@ namespace VendasWebMvc.Controllers
                 return RedirectToAction(nameof(Index));  // Redirecionar para a página inicial que é a Index.
 
             }
-            catch (NotFoundException)
+            catch (ApplicationException e) // Como a exceção por si já tem uma mensagem, então para a tratar crio um apelido ( neste caso "e").
             {
-                return NotFound();
+                return RedirectToAction(nameof(Error), new { message = e.Message }); // retorna a mensagem da exceção.
             }
 
-            catch (DbConcurrecyException)
+            // As duas condições abaixo foram substituidas pela acima pois ApplicationException é a superclasse das duas abaixo e então é feito o Upcasting.
+
+            /*catch (NotFoundException e) // Como a exceção por si já tem uma mensagem, então para a tratar crio um apelido ( neste caso "e").
             {
-                return BadRequest();
+                return RedirectToAction(nameof(Error), new { message = e.Message }); // retorna a mensagem da exceção.
             }
+
+            catch (DbConcurrecyException e)
+            {
+                return RedirectToAction(nameof(Error), new { message = e.Message }); // retorna a mensagem da exceção.
+            }*/
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel()
+            {
+                Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier // Código para achar o Id interno da requisição.
+            };
+            return View(viewModel);
         }
     }
 }
