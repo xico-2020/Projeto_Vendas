@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;  // Permite definir anotações nos campos a mostrar no Ecran. Através de [Display]
 using System.Linq;
 
 namespace VendasWebMvc.Models
@@ -8,8 +9,16 @@ namespace VendasWebMvc.Models
     {
         public int Id  { get; set; }
         public string Name  { get; set; }
+
+        [DataType(DataType.EmailAddress)]  // O email mostrado assume forma de link para poder diretamente envia mail.
         public string Email  { get; set; }
+
+        [Display( Name = "Birth Date")]
+        [DataType(DataType.Date)]  // Para pedir apenas a data na inserção de dados
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")] // mostra a data no formato especificado, em que 0 é o valor do campo.
         public DateTime BirthDate { get; set; }
+        [Display(Name = "Base Salary")]
+        [DisplayFormat(DataFormatString = "{0:F2}")]  // O formato do salário tem duas casas decimais.
         public double Salary { get; set; }
         public Department Department { get; set; }  // Para ler a Classe Department.
         public int DepartmentId { get; set; }  // Para garantir ao EntityFramework que vai existir um Id de Departamento, uma vez que um int não pode ser nulo. Declarando DepartmentId o FrameWork consegue relacionar com o Id de Seller e criar a BD corretamente.
