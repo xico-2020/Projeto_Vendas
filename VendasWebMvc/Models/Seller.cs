@@ -26,7 +26,7 @@ namespace VendasWebMvc.Models
         [Required(ErrorMessage = "{0} required")]
         [Range(100.0, 50000.0, ErrorMessage = "{0} must be from {1} to {2}")]
         [Display(Name = "Base Salary")]
-        [DisplayFormat(DataFormatString = "{0:F2}")]  // O formato do salário tem duas casas decimais.
+        [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
         public double Salary { get; set; }
         
         public Department Department { get; set; }  // Para ler a Classe Department.
