@@ -40,9 +40,17 @@ namespace VendasWebMvc.Services
 
         public async Task RemoveAsync(int id)
         {
-            var obj = await _context.Seller.FindAsync(id);  // Alterado para sincrono. (adicionado o await e alterado para FindAsync em vez de Find.
-            _context.Seller.Remove(obj);
-            await _context.SaveChangesAsync();  // Assincrono
+            try  // bloco try para tratar exeção personalizada ao apagar vendedor com vendas. Não permitido pela BD e causa exceção de violação de integridade.
+            {
+                var obj = await _context.Seller.FindAsync(id);  // Alterado para sincrono. (adicionado o await e alterado para FindAsync em vez de Find.
+                _context.Seller.Remove(obj);
+                await _context.SaveChangesAsync();  // Assincrono
+            }
+            catch (DbUpdateException e)
+            {
+                //throw new IntergrityException(e.Message); // Mensagem do sistema
+                throw new IntergrityException("Cant't delete seller because he/she has sales"); // Mensagem personalizada
+            }
         }
 
         public async Task UpdateAsyc(Seller obj)  // recebe um objeto do tipo Seller. Assincrono
