@@ -22,35 +22,45 @@ namespace VendasWebMvc.Controllers
             _sellerService = sellerService;
             _departmentService = departmentService;
         }
-        public IActionResult Index()  // Tem que chamar a FindAll do SellerService. Para isso crio acima uma dependencia para ele.
+        // public IActionResult Index()  // Tem que chamar a FindAll do SellerService. Para isso crio acima uma dependencia para ele. Não assincrono
+        public async Task<IActionResult> Index()   // Assincrono
         {
-            var list = _sellerService.FindAll();  // retorna lista de Seller
+            //var list = _sellerService.FindAll();  // retorna lista de Seller . Método sincrono
+            var list = await _sellerService.FindAllAsync();  // Método assincrono
             return View(list);  // passo a lista como argumento do metodo View para gerar um IActionResult contendo esta lista.
         }
 
-        public IActionResult Create()
+        public async Task <IActionResult> Create()
         {
-            var departments = _departmentService.FindAll();
+            var departments = await _departmentService.FindAllAsync();
             var viewModel = new SellerFormViewModel { Departments = departments }; // Inicia o SellerFormViewModels com a Lista de Departamentos da linha anterior.
             return View(viewModel);  // Quando o Ecran de Registo de Vendas pela primeira vez, já tem os dados dos Departamentos existentes.  
         }
 
         [HttpPost]    // Indica que  o Create vai ser uma ação de Post e não de Get.
         [ValidateAntiForgeryToken]  // Para prevenir ataques CSRF - Ataques maliciosos que aproveitam a sessão aberta.
-        public IActionResult Create(Seller seller)
+        public async Task <IActionResult> Create(Seller seller)
         {
-            _sellerService.Insert(seller);
+            if (!ModelState.IsValid)
+            {
+                var departments = await _departmentService.FindAllAsync();  // Le os departamentos
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };  // Gera lista de Vendedores
+                return View(viewModel);  // Se o modelo (valores introduzidos) não for válido, retorna a view enquanto o formulário não for corretamente preenchido.
+                                      // É uma segunda validação para o caso de o navegador ter o JavaScrip desabilitado não cumprindo os testes definidos para os campos na Views -> Create
+            }
+
+            await _sellerService.InsertAsync(seller);
             return RedirectToAction(nameof(Index));  // REdirecionar para a ação Index que é a que vai mostrar o Ecran de Vendedores.
         }
 
-        public IActionResult Delete(int? id)  // int? -> Indica que é opcional. 
+        public async Task <IActionResult> Delete(int? id)  // int? -> Indica que é opcional. 
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new {message =  "Id not provided"} );
             }
 
-            var obj = _sellerService.FindById(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
+            var obj = await _sellerService.FindByIdAsync(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -61,20 +71,20 @@ namespace VendasWebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
+        public async Task <IActionResult> Delete(int id)
         {
-            _sellerService.Remove(id);
+            await _sellerService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task <IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
+            var obj = await _sellerService.FindByIdAsync(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
@@ -83,28 +93,36 @@ namespace VendasWebMvc.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int? id)  // Este método serve para abrir o ecran de vendedor para o editar.
+        public async Task <IActionResult> Edit(int? id)  // Este método serve para abrir o ecran de vendedor para o editar.
         {
             if (id == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not provided" });
             }
 
-            var obj = _sellerService.FindById(id.Value);  //  obj recebe o _sellerService passando como argumento o id
+            var obj = await _sellerService.FindByIdAsync(id.Value);  //  obj recebe o _sellerService passando como argumento o id
             if (obj == null)
             {
                 return RedirectToAction(nameof(Error), new { message = "Id not found" });
             }
 
-            List<Department> departments = _departmentService.FindAll(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
+            List<Department> departments = await _departmentService.FindAllAsync(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
             SellerFormViewModel viewModel = new SellerFormViewModel { Seller = obj, Departments = departments }; // Preencho o SellerFormViewModel com os dados de Seller do obj que acima fomos ler à Base de Dados. Preencho tambem os Departamentos.
             return View(viewModel);  // retornar a View preenchida com os dados de viewModel.
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task <IActionResult> Edit(int id, Seller seller)
         {
+            if (!ModelState.IsValid)
+            {
+                var departments = await _departmentService.FindAllAsync();
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };
+                return View(viewModel);  // Se o modelo (valores introduzidos) não for válido, retorna a view enquanto o formulário não for corretamente preenchido.
+                                         // É uma segunda validação para o caso de o navegador ter o JavaScrip desabilitado não cumprindo os testes definidos para os campos na Views -> Create
+            }
+
             if (id != seller.Id)  // Testar se o id passado no método é diferente do vendedor. O Id do vendedor não pode ser |= do do URL da requisição.
             {
                 return RedirectToAction(nameof(Error), new { message = "Id mismatch" });  // Id não coincide
@@ -112,7 +130,7 @@ namespace VendasWebMvc.Controllers
 
             try
             {
-                _sellerService.Update(seller);  // Atualiza o vendedor
+                await _sellerService.UpdateAsyc(seller);  // Atualiza o vendedor
                 return RedirectToAction(nameof(Index));  // Redirecionar para a página inicial que é a Index.
 
             }
@@ -134,7 +152,7 @@ namespace VendasWebMvc.Controllers
             }*/
         }
 
-        public IActionResult Error(string message)
+        public IActionResult Error(string message)   // Como não tem acesso à Base de Dados não é necessário ser assincrona.
         {
             var viewModel = new ErrorViewModel()
             {

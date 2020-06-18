@@ -19,40 +19,44 @@ namespace VendasWebMvc.Services
             _context = context;
         }
 
-        public List<Seller> FindAll()
+        public async Task<List<Seller>> FindAllAsync()
         {
-            return _context.Seller.ToList(); // Acede à tabela de vendedores e converte para uma lista.
+            return await _context.Seller.ToListAsync(); // Acede à tabela de vendedores e converte para uma lista. De forma assincrona
         }
 
-        public void Insert(Seller obj)  // Para inserir o Vendedor na Base de Dados
+        // public void Insert(Seller obj)  // Para inserir o Vendedor na Base de Dados. Método Sincrono (mais lento)
+        public async Task InsertAsync(Seller obj)  // Melhorado para método assincrono
         {
-            _context.Add(obj);
-            _context.SaveChanges();
+            _context.Add(obj);   // A operação Add é feita apenas na memória.
+            await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
         }
 
-        public Seller FindById(int id)
+        //public Seller FindByIdAsync(int id)  // Sincrono
+        public async Task<Seller> FindByIdAsync(int id)  // Método assincrono
         {
-            return _context.Seller.Include(obj => obj.Department).FirstOrDefault(obj => obj.Id == id);  // Include(obj => obj.Department -> Para que na View Seller em Details seja possivel ver o Departamento.
-                                                    // Com o Include o EntityFrameWork junta os dados de duas tabelas.   
+            return await _context.Seller.Include(obj => obj.Department).FirstOrDefaultAsync(obj => obj.Id == id);  // Include(obj => obj.Department -> Para que na View Seller em Details seja possivel ver o Departamento.
+                                                    // Com o Include o EntityFrameWork junta os dados de duas tabelas.  Alterado para assincrono.
         }
 
-        public void Remove(int id)
+        public async Task RemoveAsync(int id)
         {
-            var obj = _context.Seller.Find(id);
+            var obj = await _context.Seller.FindAsync(id);  // Alterado para sincrono. (adicionado o await e alterado para FindAsync em vez de Find.
             _context.Seller.Remove(obj);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();  // Assincrono
         }
 
-        public void Update(Seller obj)  // recebe um objeto do tipo Seller
-        {   
-            if (!_context.Seller.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
-            {
+        public async Task UpdateAsyc(Seller obj)  // recebe um objeto do tipo Seller. Assincrono
+        {
+            bool hasAny = await _context.Seller.AnyAsync(x => x.Id == obj.Id);  // Modificado por causa de método sincrono. O teste é feito antes do if.
+            // if (!_context.Seller.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
+            if (!hasAny)
+                {
                 throw new NotFoundException("Id not found");
             }
             try
             {
                 _context.Update(obj);  // Atualiza o objeto Seller na Base de Dados
-                _context.SaveChanges(); // Guarda as alterações.
+                await _context.SaveChangesAsync(); // Guarda as alterações. Assincrono.
 
             }
             catch(DbConcurrecyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
