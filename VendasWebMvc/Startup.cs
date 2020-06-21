@@ -67,7 +67,7 @@ namespace VendasWebMvc
             if (env.IsDevelopment())   // Se estiver no perfil de desenvolvimento ...
             {
                 app.UseDeveloperExceptionPage();
-                seedingService.Seed(); // Chamada metodo Seed em que é criada a Base Dado, caso ainda não esteja.
+                seedingService.Seed(); // Chamada metodo Seed em que é criada a Base Dados, caso ainda não esteja.
             }
             else // Se estiver no perfil de produção ...
             {

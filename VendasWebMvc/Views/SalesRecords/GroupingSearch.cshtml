@@ -17,11 +17,14 @@
                     <input type="date" class="form-control" name="minDate" value=@ViewData["minDate"]>
                 </div>
                 <div class="form-group">
-                    <label for="maxDate">Max Date</label>
+                    <label for="  maxDate">Max Date</label>
                     <input type="date" class="form-control" name="maxDate" value=@ViewData["maxDate"]>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <th>
+                <a asp-action="Index">Back to Sales</a>
+            </th>
         </form>
     </div>
 </nav>
@@ -73,3 +76,6 @@
         </div>
     </div>
 }
+<div>
+    <a asp-action="Index">Back to Sales</a>
+</div>

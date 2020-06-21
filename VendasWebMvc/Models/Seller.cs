@@ -2,29 +2,32 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;  // Permite definir anotações nos campos a mostrar no Ecran. Através de [Display]
 using System.Linq;
+using System.Globalization;
+using Newtonsoft.Json.Serialization;
 
 namespace VendasWebMvc.Models
 {
     public class Seller
     {
-        public int Id  { get; set; }
+        public int Id { get; set; }
         [Required(ErrorMessage = "{0} required")]  // 0= Nome do atributo (Name)
         [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} size should be between {2} e {1}")] // 0= parametro 1. 2= parametro 3 e 1= parametro 2 .
-        public string Name  { get; set; }
+        public string Name { get; set; }
 
         [Required(ErrorMessage = "{0} required")]
         [EmailAddress(ErrorMessage = "Enter a valid email")]
         [DataType(DataType.EmailAddress)]  // O email mostrado assume forma de link para poder diretamente envia mail.
-        public string Email  { get; set; }
+        public string Email { get; set; }
 
         [Required(ErrorMessage = "{0} required")]
-        [Display( Name = "Birth Date")]
+        [Display(Name = "Birth Date")]
         [DataType(DataType.Date)]  // Para pedir apenas a data na inserção de dados
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")] // mostra a data no formato especificado, em que 0 é o valor do campo.
         public DateTime BirthDate { get; set; }
 
-        [Required(ErrorMessage = "{0} required")]
-        [Range(100.0, 50000.0, ErrorMessage = "{0} must be from {1} to {2}")]
+        [Required(ErrorMessage = "{0} Obrigatório introduzir um valor")]
+
+        [Range(100.00, 50000.00, ErrorMessage = "{0} must be from {1} to {2}")]
         [Display(Name = "Base Salary")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
         public double Salary { get; set; }

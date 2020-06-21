@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VendasWebMvc.Models;
 using Microsoft.EntityFrameworkCore;
+using VendasWebMvc.Models.Enums;
 
 namespace VendasWebMvc.Services
 {
@@ -14,6 +15,17 @@ namespace VendasWebMvc.Services
         public SalesRecordService(VendasWebMvcContext context)
         {
             _context = context;
+        }
+
+        public async Task<List<SalesRecord>> FindAllAsync()
+        {
+            return await _context.SalesRecord.ToListAsync(); // Acede à tabela de vendas e converte para uma lista. De forma assincrona
+        }
+
+        public async Task InsertAsync(SalesRecord obj)  // Melhorado para método assincrono
+        {
+            _context.Add(obj);   // A operação Add é feita apenas na memória.
+            await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
         }
 
         public async Task<List<SalesRecord>> FindByDateAsync(DateTime? minDate, DateTime? maxDate)
@@ -42,6 +54,7 @@ namespace VendasWebMvc.Services
             if (minDate.HasValue)
             {
                 result = result.Where(x => x.Date >= minDate.Value);
+               
             }
 
             if (maxDate.HasValue)
