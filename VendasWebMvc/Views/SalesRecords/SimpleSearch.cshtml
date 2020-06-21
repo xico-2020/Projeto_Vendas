@@ -67,36 +67,45 @@
                     <th>
                         @Html.DisplayNameFor(model => model.Status)
                     </th>
+                    <th>
+
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Date)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Seller.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Seller.Department.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Amount)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Status)
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Seller.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Seller.Department.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" class="btn btn-primary badge" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" class="btn btn-primary badge" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" class="btn btn-primary badge" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                 </tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
 <div>
     <a asp-action="Index" class="btn btn-primary badge"> Back to Sales</a>
 </div>
