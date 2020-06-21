@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using VendasWebMvc.Models;
 using Microsoft.EntityFrameworkCore;
 using VendasWebMvc.Models.Enums;
+using System.Security.Cryptography.X509Certificates;
 
 namespace VendasWebMvc.Services
 {
@@ -28,17 +29,27 @@ namespace VendasWebMvc.Services
             await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
         }
 
-        public async Task<List<SalesRecord>> FindByDateAsync(DateTime? minDate, DateTime? maxDate)
+        public async Task<List<SalesRecord>> FindByDateAsync(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
         {
+            bool statusAll = returnedStatus.Equals(SaleStatus.All); 
             var result = from obj in _context.SalesRecord select obj;  // Vai ler um SalesRecord que é do tipo DbSet e vai construir um objeto result do tipo IQueryable(onde se pode construir as consultas).
             if (minDate.HasValue)
             {
                 result = result.Where(x => x.Date >= minDate.Value);
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
+                
             }
 
             if (maxDate.HasValue)
             {
                 result = result.Where(x => x.Date <= maxDate.Value);
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
             }
 
             return await result
@@ -48,18 +59,26 @@ namespace VendasWebMvc.Services
                 .ToListAsync();  // Recebe a lista
         }
 
-        public async Task<List<IGrouping<Department, SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate)  // Como é agrupamento de dados, não é List mas Igrouping.
+        public async Task<List<IGrouping<Department, SalesRecord>>> FindByDateGroupingAsync(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)  // Como é agrupamento de dados, não é List mas Igrouping.
         {
+            bool statusAll = returnedStatus.Equals(SaleStatus.All);
             var result = from obj in _context.SalesRecord select obj;  // Vai ler um SalesRecord que é do tipo DbSet e vai construir um objeto result do tipo IQueryable(onde se pode construir as consultas).
             if (minDate.HasValue)
             {
                 result = result.Where(x => x.Date >= minDate.Value);
-               
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
             }
 
             if (maxDate.HasValue)
             {
                 result = result.Where(x => x.Date <= maxDate.Value);
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
             }
 
             return await result

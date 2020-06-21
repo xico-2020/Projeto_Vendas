@@ -51,7 +51,7 @@
             }
 
 
-            public async Task <IActionResult> SimpleSearch(DateTime? minDate, DateTime? maxDate)
+            public async Task <IActionResult> SimpleSearch(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
             {
                 if (!minDate.HasValue)
                 {
@@ -66,11 +66,11 @@
                 ViewData["minDate"] = minDate.Value.ToString("yyyy-MM-dd");  // passar os valores de minDate e maxDate para a view
                 ViewData["maxDate"] = maxDate.Value.ToString("yyyy-MM-dd");
 
-                var result = await _salesRecordService.FindByDateAsync(minDate, maxDate);
+                var result = await _salesRecordService.FindByDateAsync(minDate, maxDate, returnedStatus);
                 return View(result);
             }
 
-            public async Task<IActionResult> GroupingSearch(DateTime? minDate, DateTime? maxDate)
+            public async Task<IActionResult> GroupingSearch(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
             {
                 if (!minDate.HasValue)
                 {
@@ -85,7 +85,7 @@
                 ViewData["minDate"] = minDate.Value.ToString("yyyy-MM-dd");  // passar os valores de minDate e maxDate para a view
                 ViewData["maxDate"] = maxDate.Value.ToString("yyyy-MM-dd");
 
-                var result = await _salesRecordService.FindByDateGroupingAsync(minDate, maxDate);
+                var result = await _salesRecordService.FindByDateGroupingAsync(minDate, maxDate, returnedStatus);
                 return View(result);
             }
 
