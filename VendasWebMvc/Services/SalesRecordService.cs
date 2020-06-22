@@ -6,6 +6,7 @@ using VendasWebMvc.Models;
 using Microsoft.EntityFrameworkCore;
 using VendasWebMvc.Models.Enums;
 using System.Security.Cryptography.X509Certificates;
+using VendasWebMvc.Services.Exceptions;
 
 namespace VendasWebMvc.Services
 {
@@ -18,17 +19,61 @@ namespace VendasWebMvc.Services
             _context = context;
         }
 
+        /*
         public async Task<List<SalesRecord>> FindAllAsync()
         {
             return await _context.SalesRecord.ToListAsync(); // Acede à tabela de vendas e converte para uma lista. De forma assincrona
         }
-
+        */
         public async Task InsertAsync(SalesRecord obj)  // Melhorado para método assincrono
         {
             _context.Add(obj);   // A operação Add é feita apenas na memória.
             await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
         }
+       
+        public async Task<SalesRecord> FindByIdAsync(int id)  // Método assincrono
+        {
+            return await _context.SalesRecord.Include(obj => obj.Seller).FirstOrDefaultAsync(obj => obj.Id == id);  // Include(obj => obj.Seller -> Para que na View SalesRecord em Details seja possivel ver o Vendedor.
+                                                                                                                   // Com o Include o EntityFrameWork junta os dados de duas tabelas.  Alterado para assincrono.
+        }
+        
+        public async Task RemoveAsync(int id)
+        {
+            try  // bloco try para tratar exeção personalizada ao apagar vendedor com vendas. Não permitido pela BD e causa exceção de violação de integridade.
+            {
+                var obj = await _context.SalesRecord.FindAsync(id);  // Alterado para sincrono. (adicionado o await e alterado para FindAsync em vez de Find.
+                _context.SalesRecord.Remove(obj);
+                await _context.SaveChangesAsync();  // Assincrono
+            }
+            catch (DbUpdateException e)
+            {
+                //throw new IntergrityException(e.Message); // Mensagem do sistema
+                throw new IntergrityException("Cant't delete seller because he/she has sales"); // Mensagem personalizada
+            }
+        }
 
+        public async Task UpdateAsyc(SalesRecord obj)  // recebe um objeto do tipo Seller. Assincrono
+        {
+            bool hasAny = await _context.SalesRecord.AnyAsync(x => x.Id == obj.Id);  // Modificado por causa de método sincrono. O teste é feito antes do if.
+            // if (!_context.SalesRecordr.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
+            if (!hasAny)
+            {
+                throw new NotFoundException("Id not found");
+            }
+            try
+            {
+                _context.Update(obj);  // Atualiza o objeto SalesRecord na Base de Dados
+                await _context.SaveChangesAsync(); // Guarda as alterações. Assincrono.
+
+            }
+            catch (DbConcurrecyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
+                                             // Organização por camadas. Tratamento a nível se serviço. O Controlador(SalesRecordController)  só trata a exceção lançada pelo serviço.
+            {
+                throw new DbConcurrecyException(e.Message);
+            }
+        }
+
+        
         public async Task<List<SalesRecord>> FindByDateAsync(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
         {
             bool statusAll = returnedStatus.Equals(SaleStatus.All); 

@@ -14,6 +14,7 @@ namespace VendasWebMvc.Models
 
         [Required(ErrorMessage = "{0} Required")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
+        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Only numbers alowed")]
         public double Amount { get; set; }
 
         public SaleStatus Status { get; set; }
