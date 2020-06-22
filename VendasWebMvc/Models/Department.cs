@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;  // Permite definir anotações nos campos a mostrar no Ecran. Através de [Display]
+
 using System.Linq;
 
 namespace VendasWebMvc.Models
@@ -7,6 +9,10 @@ namespace VendasWebMvc.Models
     public class Department
     {
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "{0} required")]
+        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Characters are not allowed, only letters")]
+        [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} size should be between {2} e {1}")]
         public string Name { get; set; }
         public ICollection<Seller> Sellers { get; set; } = new List<Seller>();  // Ligação à Classe Seller (relação tem muitos...)
 

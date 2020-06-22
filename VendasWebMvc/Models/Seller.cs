@@ -11,6 +11,7 @@ namespace VendasWebMvc.Models
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "{0} required")]  // 0= Nome do atributo (Name)
+        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Characters are not allowed, only letters")]
         [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} size should be between {2} e {1}")] // 0= parametro 1. 2= parametro 3 e 1= parametro 2 .
         public string Name { get; set; }
 
@@ -30,6 +31,7 @@ namespace VendasWebMvc.Models
         [Range(100.00, 50000.00, ErrorMessage = "{0} must be from {1} to {2}")]
         [Display(Name = "Base Salary")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
+        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Only numbers alowed")]
         public double Salary { get; set; }
         
         public Department Department { get; set; }  // Para ler a Classe Department.
