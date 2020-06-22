@@ -52,7 +52,7 @@ namespace VendasWebMvc.Services
             }
         }
 
-        public async Task UpdateAsyc(SalesRecord obj)  // recebe um objeto do tipo Seller. Assincrono
+        public async Task UpdateAsync(SalesRecord obj)  // recebe um objeto do tipo Seller. Assincrono
         {
             bool hasAny = await _context.SalesRecord.AnyAsync(x => x.Id == obj.Id);  // Modificado por causa de método sincrono. O teste é feito antes do if.
             // if (!_context.SalesRecordr.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
@@ -133,5 +133,36 @@ namespace VendasWebMvc.Services
                 .GroupBy(x => x.Seller.Department)
                 .ToListAsync();  // Recebe a lista
         }
+
+        public async Task<List<IGrouping< Seller, SalesRecord>>> FindByDate1GroupingAsync(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)  // Como é agrupamento de dados, não é List mas Igrouping.
+        {
+            bool statusAll = returnedStatus.Equals(SaleStatus.All);
+            var result = from obj in _context.SalesRecord select obj;  // Vai ler um SalesRecord que é do tipo DbSet e vai construir um objeto result do tipo IQueryable(onde se pode construir as consultas).
+            if (minDate.HasValue)
+            {
+                result = result.Where(x => x.Date >= minDate.Value);
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
+            }
+
+            if (maxDate.HasValue)
+            {
+                result = result.Where(x => x.Date <= maxDate.Value);
+                if (!statusAll)
+                {
+                    result = result.Where(x => x.Status == returnedStatus);
+                }
+            }
+
+            return await result
+                //.Include(x => x.Seller)  // Faz o Join das tabelas
+                .Include(x => x.Seller.Department)  // Faz o Join das tabelas
+                .OrderByDescending(x => x.Date)  // Ordena por ordem decrescente
+                .GroupBy(x => x.Seller)
+                .ToListAsync();  // Recebe a lista
+        }
+
     }
 }

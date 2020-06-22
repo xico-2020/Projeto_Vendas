@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using VendasWebMvc.Models;
 using Microsoft.EntityFrameworkCore;
 using VendasWebMvc.Services.Exceptions;
+using VendasWebMvc.Models.Enums;
 
 namespace VendasWebMvc.Services
 {
@@ -51,7 +52,7 @@ namespace VendasWebMvc.Services
             }
         }
 
-        public async Task UpdateAsyc(Seller obj)  // recebe um objeto do tipo Seller. Assincrono
+        public async Task UpdateAsync(Seller obj)  // recebe um objeto do tipo Seller. Assincrono
         {
             bool hasAny = await _context.Seller.AnyAsync(x => x.Id == obj.Id);  // Modificado por causa de método sincrono. O teste é feito antes do if.
             // if (!_context.Seller.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
@@ -71,5 +72,6 @@ namespace VendasWebMvc.Services
                 throw new DbConcurrecyException(e.Message);
             }
         }
+
     }
 }
