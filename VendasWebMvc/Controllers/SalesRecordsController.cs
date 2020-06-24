@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
@@ -32,6 +33,15 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> Create()
         {
+            /*bool statusAll = returnedStatus.Equals(SaleStatus.All);
+
+            if (statusAll)
+            {
+                return RedirectToAction(nameof(Error), new { message = "All - Departamento não existe!" });
+
+            }*/
+
+
             var sellers = await _sellerService.FindAllAsync();
             var viewModel = new SalesRecordFormViewModel { Sellers = sellers }; // Inicia o SalesRecordFormViewModels com a Lista de Vendedores da linha anterior.
             return View(viewModel);  // Quando o Ecran de Registo de Vendas pela primeira vez, já tem os dados dos Vendedores existentes.  
@@ -57,13 +67,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
+                return RedirectToAction(nameof(Error), new { message = "Id não indicado" });
             }
 
             var obj = await _salesRecordService.FindByIdAsync(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not found" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             return View(obj);
@@ -86,15 +96,17 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> Edit(int? id)  // Este método serve para abrir o ecran de vendedor para o editar.
         {
+            
+
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
+                return RedirectToAction(nameof(Error), new { message = "Id não indicado" });
             }
 
             var obj = await _salesRecordService.FindByIdAsync(id.Value);  //  obj recebe o _sellerService passando como argumento o id
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not found" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             List<Seller> sellers = await _sellerService.FindAllAsync(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
@@ -116,7 +128,7 @@ namespace VendasWebMvc.Controllers
 
             if (id != salesRecord.Id)  // Testar se o id passado no método é diferente do vendedor. O Id do vendedor não pode ser |= do do URL da requisição.
             {
-                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });  // Id não coincide
+                return RedirectToAction(nameof(Error), new { message = "Id não coincide" });  // Id não coincide
             }
 
             try
@@ -134,6 +146,12 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> SimpleSearch(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
         {
+            if (minDate > maxDate)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Data Final deve que ser menor ou igual à inicial" });  
+               
+            }
+
             if (!minDate.HasValue)
             {
                 minDate = new DateTime(DateTime.Now.Year, 1, 1);  // Se não for indicada data minima, inicializo a pesquisa com o dia 01/01/Ano atual.
@@ -153,6 +171,13 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> GroupingSearch(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
         {
+
+            if (minDate > maxDate)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Data Final deve que ser menor ou igual à inicial" });
+
+            }
+
             if (!minDate.HasValue)
             {
                 minDate = new DateTime(DateTime.Now.Year, 1, 1);  // Se não for indicada data minima, inicializo a pesquisa com o dia 01/01/Ano atual.
@@ -172,6 +197,12 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> Grouping1Search(DateTime? minDate, DateTime? maxDate, SaleStatus returnedStatus)
         {
+            if (minDate > maxDate)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Data Final deve que ser menor ou igual à inicial" });
+
+            }
+
             if (!minDate.HasValue)
             {
                 minDate = new DateTime(DateTime.Now.Year, 1, 1);  // Se não for indicada data minima, inicializo a pesquisa com o dia 01/01/Ano atual.

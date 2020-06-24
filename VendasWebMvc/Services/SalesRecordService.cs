@@ -27,10 +27,19 @@ namespace VendasWebMvc.Services
         */
         public async Task InsertAsync(SalesRecord obj)  // Melhorado para método assincrono
         {
+            /*bool statusAll = returnedStatus.Equals(SaleStatus.All);
+            
+            if (!statusAll)
+            {
+                _context.Add(obj);   // A operação Add é feita apenas na memória.
+                await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
+            } */
+
             _context.Add(obj);   // A operação Add é feita apenas na memória.
             await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
+
         }
-       
+
         public async Task<SalesRecord> FindByIdAsync(int id)  // Método assincrono
         {
             return await _context.SalesRecord.Include(obj => obj.Seller).FirstOrDefaultAsync(obj => obj.Id == id);  // Include(obj => obj.Seller -> Para que na View SalesRecord em Details seja possivel ver o Vendedor.
@@ -164,5 +173,11 @@ namespace VendasWebMvc.Services
                 .ToListAsync();  // Recebe a lista
         }
 
+        /*
+        public  bool VerifyStatus()
+        {
+            bool hasStatus = _context.SalesRecord.Any(x => x.Status == SaleStatus.All);
+            return hasStatus;
+        }*/
     }
 }

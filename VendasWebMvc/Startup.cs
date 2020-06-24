@@ -47,7 +47,7 @@ namespace VendasWebMvc
 
             services.AddScoped<SeedingService>();  // Registo do SeedingService no sistema de injeção de dependencias da Aplicação.
             services.AddScoped<SellerService>();   // Registo do SellerService no sistema de injeção de dependencias da Aplicação.
-            services.AddScoped<DepartmentService>();
+            services.AddScoped<DepartmentService>();  // services é do método ConfigureServices, acima, e é o parametro passado.
             services.AddScoped<SalesRecordService>();
         }
 

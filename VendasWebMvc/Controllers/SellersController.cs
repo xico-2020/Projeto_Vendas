@@ -14,7 +14,7 @@ namespace VendasWebMvc.Controllers
 {
     public class SellersController : Controller
     {
-        private readonly SellerService _sellerService;
+        private readonly SellerService _sellerService;    // Criação de dependencia para o SellerService.
         private readonly DepartmentService _departmentService;
         private readonly SalesRecordService _salesRecordService;
 
@@ -25,11 +25,11 @@ namespace VendasWebMvc.Controllers
             _salesRecordService = salesRecordService;
         }
         // public IActionResult Index()  // Tem que chamar a FindAll do SellerService. Para isso crio acima uma dependencia para ele. Não assincrono
-        public async Task<IActionResult> Index()   // Assincrono
+        public async Task<IActionResult> Index()   // Assincrono     (CHAMADO O CONTROLADOR )
         {
-            //var list = _sellerService.FindAll();  // retorna lista de Seller . Método sincrono
-            var list = await _sellerService.FindAllAsync();  // Método assincrono
-            return View(list);  // passo a lista como argumento do metodo View para gerar um IActionResult contendo esta lista.
+            //var list = _sellerService.FindAll();  // retorna lista de Seller . Método sincrono   
+            var list = await _sellerService.FindAllAsync();  // Método assincrono    ( CONTROLADOR ACEDEU AO MODEL )
+            return View(list);  // passo a lista como argumento do metodo View para gerar um IActionResult contendo esta lista.  ( CONTROLADOR ENCAMINHA DADOS PARA A VIEW )
         }
 
         public async Task<IActionResult> Create()
@@ -41,7 +41,7 @@ namespace VendasWebMvc.Controllers
 
         [HttpPost]    // Indica que  o Create vai ser uma ação de Post e não de Get.
         [ValidateAntiForgeryToken]  // Para prevenir ataques CSRF - Ataques maliciosos que aproveitam a sessão aberta.
-        public async Task<IActionResult> Create(Seller seller)
+        public async Task<IActionResult> Create(Seller seller)  // recebe um objeto vendedor que veio na requisição. Para instanciar o vendedor basta (Seller seller) 
         {
             if (!ModelState.IsValid)
             {
@@ -53,6 +53,7 @@ namespace VendasWebMvc.Controllers
 
             await _sellerService.InsertAsync(seller);
             return RedirectToAction(nameof(Index));  // REdirecionar para a ação Index que é a que vai mostrar o Ecran de Vendedores.
+                                                     // Com o nameof(Index) se for alterado o nome de Index não vai ser preciso alterar aqui.
         }
 
         public async Task<IActionResult> Delete(int? id)  // int? -> Indica que é opcional. 

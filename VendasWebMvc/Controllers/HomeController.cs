@@ -12,12 +12,17 @@ namespace VendasWebMvc.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["Message"] = "Vendas Web MVC App from C# Course";
             return View();
         }
 
+        public IActionResult Index1()
+        {
+            return View();
+        }
         public IActionResult About()
         {
-            ViewData["Message"] = "Sales Web MVC App from C# Course"; 
+            ViewData["Message"] = "Vendas Web MVC App from C# Course"; 
             ViewData["Professor"] = "Nelio Alves";  // Acrescentado
 
             return View();
@@ -25,7 +30,7 @@ namespace VendasWebMvc.Controllers
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Página de contacto";
 
             return View();
         }

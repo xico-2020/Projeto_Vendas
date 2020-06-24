@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<VendasWebMvc.Models.SalesRecord>
 
 @{
-    ViewData["Title"] = "Simple Search";
+    ViewData["Title"] = "Pesquisa de vendas";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -13,25 +13,25 @@
             <form class="navbar-form navbar-left" role="search">
                 <div class="form-group">
                     <div class="form-group">
-                        <label for="minDate">Min Date</label>
+                        <label for="minDate">Data inicial</label>
                         <input type="date" class="form-control" name="minDate" value=@ViewData["minDate"] />
                     </div>
                     <div class="form-group">
-                        <label for="  maxDate">Max Date</label>
+                        <label for="  maxDate">Data final</label>
                         <input type="date" class="form-control" name="maxDate" value=@ViewData["maxDate"] />
                     </div>
                     <div class="form-group">
-                        <label for="">Status</label>
+                        <label for="">Estado</label>
                         <label for="Status" class="control-label"></label>
                         <select for="returnedStatus" name="returnedStatus" asp-items="Html.GetEnumSelectList<VendasWebMvc.Models.Enums.SaleStatus>()" class="form-control"></select>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Submeter</button>
                 <th>
 
                 </th>
                 <th>
-                    <a asp-action="Index" class="btn btn-primary badge"> Back to Sales</a>
+                    <a asp-action="Index" class="btn btn-primary badge"> Voltar às vendas</a>
                 </th>
             </form>
         </div>
@@ -43,25 +43,25 @@
 
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">Total sales = @Model.Sum(obj => obj.Amount).ToString("0,0.00")</h3>
+        <h3 class="panel-title">Total vendas = @Model.Sum(obj => obj.Amount).ToString("0,0.00")</h3>
     </div>
     <div class="panel-body">
         <table class="table table-striped table-hover">
             <thead>
                 <tr class="success">
                     <th>
-                        @Html.DisplayNameFor(model => model.Id)
+                        Número
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Date)
+                        Data
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Seller)
+                        Vendedor
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Seller.Department)
+                        Departamento
                     </th>
-                    <th align="right">
+                    <th class="text-center">
                         @Html.DisplayNameFor(model => model.Amount)
                     </th>
                     <th>
@@ -95,8 +95,8 @@
                         @Html.DisplayFor(modelItem => item.Status)
                     </td>
                     <td>
-                        <a asp-action="Edit" class="btn btn-primary badge" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Delete" class="btn btn-primary badge" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Edit" class="btn btn-primary badge" asp-route-id="@item.Id">Editar</a> |
+                        <a asp-action="Delete" class="btn btn-primary badge" asp-route-id="@item.Id">Remover</a>
                         
                     </td>
                  </tr>
@@ -107,5 +107,5 @@
 </div>
 
 <div>
-    <a asp-action="Index" class="btn btn-primary badge"> Back to Sales</a>
+    <a asp-action="Index" class="btn btn-primary badge"> Voltar às vendas</a>
 </div>

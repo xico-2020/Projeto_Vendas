@@ -11,7 +11,7 @@ namespace VendasWebMvc.Services
 {
     public class SellerService
     {
-        private readonly VendasWebMvcContext _context;  // Dependencia para o DBContext (Data -> VendasWebMvcContext).
+        private readonly VendasWebMvcContext _context;  // Dependencia para o DBContext (Data -> VendasWebMvcContext). É readonly para que não possa ser alterada.
 
         public SellerService(VendasWebMvcContext context)
         {

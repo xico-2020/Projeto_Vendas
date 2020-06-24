@@ -25,7 +25,7 @@ namespace VendasWebMvc.Data
             {
                 return;  // Base Dados já criada.
             }
-
+         
             Department d1 = new Department(1, "Computers" );  // Instanciação / criação de quatro Departamentos.
             Department d2 = new Department(2, "Electronics");
             Department d3 = new Department(3, "Fashion");
@@ -69,7 +69,7 @@ namespace VendasWebMvc.Data
             SalesRecord r29 = new SalesRecord(29, new DateTime(2018, 10, 23), 12000.0, SaleStatus.Billed, s5);
             SalesRecord r30 = new SalesRecord(30, new DateTime(2018, 10, 12), 5000.0, SaleStatus.Billed, s2);
 
-            _context.Department.AddRange(d1, d2, d3, d4);  // Adiciona o objeto na Base Dados.
+            _context.Department.AddRange(d1, d2, d3, d4);  // Adiciona o objeto na Base Dados. AssRange permite adicionar V+arios objetos de uma vez.
             _context.Seller.AddRange(s1, s2, s3, s4, s5, s6);
             _context.SalesRecord.AddRange(
                 r1, r2, r3, r4, r5, r6, r7, r8, r9, r10,
@@ -78,7 +78,8 @@ namespace VendasWebMvc.Data
                 );
 
             _context.SaveChanges(); // Para confirmar as alterações na Base de Dados.
-        }
+           
+        } 
 
     }
 }
