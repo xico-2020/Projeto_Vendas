@@ -11,8 +11,8 @@ namespace VendasWebMvc.Models
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "{0} Obrigatório introduzir um valor!")]  // 0= Nome do atributo (Name)
-        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Characters are not allowed, only letters")]
-        [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} size should be between {2} e {1}")] // 0= parametro 1. 2= parametro 3 e 1= parametro 2 .
+        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Apenas letras são permitidas!")]
+        [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} : O nome tem ser maior que {2}  e menor que {1}")]  // 0= parametro 1. 2= parametro 3 e 1= parametro 2 .
         [Display(Name = "Nome")]
         public string Name { get; set; }
 
@@ -23,17 +23,17 @@ namespace VendasWebMvc.Models
         public string Email { get; set; }
 
         [Required(ErrorMessage = "{0} Obrigatório introduzir um valor!")]
-        [Display(Name = "Birth Date")]
+        [Display(Name = "Aniversário")]
         [DataType(DataType.Date)]  // Para pedir apenas a data na inserção de dados
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")] // mostra a data no formato especificado, em que 0 é o valor do campo.
         public DateTime BirthDate { get; set; }
 
         [Required(ErrorMessage = "{0} Obrigatório introduzir um valor!")]
 
-        [Range(100.00, 50000.00, ErrorMessage = "{0} must be from {1} to {2}")]
+        [Range(100.00, 50000.00, ErrorMessage = "{0} tem que ser entre {1} to {2}")]
         [Display(Name = "Salário")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
-        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Only numbers alowed")]
+        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Apenas algarismos são permitidos")]
         public double Salary { get; set; }
        
         public Department Department { get; set; }  // Para ler a Classe Department.

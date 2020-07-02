@@ -27,14 +27,6 @@ namespace VendasWebMvc.Services
         */
         public async Task InsertAsync(SalesRecord obj)  // Melhorado para método assincrono
         {
-            /*bool statusAll = returnedStatus.Equals(SaleStatus.All);
-            
-            if (!statusAll)
-            {
-                _context.Add(obj);   // A operação Add é feita apenas na memória.
-                await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
-            } */
-
             _context.Add(obj);   // A operação Add é feita apenas na memória.
             await _context.SaveChangesAsync();  // Como só a operação SaveChanges é que acede à Base de Dados, apenas esta fica assincrona.
 
@@ -57,7 +49,7 @@ namespace VendasWebMvc.Services
             catch (DbUpdateException e)
             {
                 //throw new IntergrityException(e.Message); // Mensagem do sistema
-                throw new IntergrityException("Cant't delete seller because he/she has sales"); // Mensagem personalizada
+                throw new IntergrityException("Não é possível apagar o vendedor(a) porque tem vendas!"); // Mensagem personalizada
             }
         }
 
@@ -67,7 +59,7 @@ namespace VendasWebMvc.Services
             // if (!_context.SalesRecordr.Any(x => x.Id == obj.Id))  // Verificar se na Base de Dados não existe um vendedor igual ao do objeto recebido no método.
             if (!hasAny)
             {
-                throw new NotFoundException("Id not found");
+                throw new NotFoundException("Id não encontrado");
             }
             try
             {
@@ -75,10 +67,10 @@ namespace VendasWebMvc.Services
                 await _context.SaveChangesAsync(); // Guarda as alterações. Assincrono.
 
             }
-            catch (DbConcurrecyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
+            catch (DbConcurrencyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
                                              // Organização por camadas. Tratamento a nível se serviço. O Controlador(SalesRecordController)  só trata a exceção lançada pelo serviço.
             {
-                throw new DbConcurrecyException(e.Message);
+                throw new DbConcurrencyException(e.Message);
             }
         }
 
@@ -172,12 +164,5 @@ namespace VendasWebMvc.Services
                 .GroupBy(x => x.Seller)
                 .ToListAsync();  // Recebe a lista
         }
-
-        /*
-        public  bool VerifyStatus()
-        {
-            bool hasStatus = _context.SalesRecord.Any(x => x.Status == SaleStatus.All);
-            return hasStatus;
-        }*/
     }
 }

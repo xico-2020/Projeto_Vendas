@@ -46,7 +46,7 @@ namespace VendasWebMvc.Controllers
             if (!ModelState.IsValid)
             {
                 var departments = await _departmentService.FindAllAsync();  // Le os departamentos
-                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };  // Gera lista de Vendedores
+                var viewModel = new SellerFormViewModel { Seller = seller, Departments = departments };  // Gera lista de Vendedores recebendo os vendedores e a lista de Departamentos.
                 return View(viewModel);  // Se o modelo (valores introduzidos) não for válido, retorna a view enquanto o formulário não for corretamente preenchido.
                                          // É uma segunda validação para o caso de o navegador ter o JavaScrip desabilitado não cumprindo os testes definidos para os campos na Views -> Create
             }
@@ -60,13 +60,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
+                return RedirectToAction(nameof(Error), new { message = "Id não indicado" });   // Redireciono para view Error de Shared e passo como argumento a mensagem.
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not found" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             return View(obj);
@@ -91,13 +91,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
+                return RedirectToAction(nameof(Error), new { message = "Id não indicado" });
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);  // id.Value -> Porque id é Nullable (porque é opcional). Só recebe o valor caso exista.
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not found" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             return View(obj);
@@ -107,13 +107,13 @@ namespace VendasWebMvc.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not provided" });
+                return RedirectToAction(nameof(Error), new { message = "Id não indicado" });
             }
 
             var obj = await _sellerService.FindByIdAsync(id.Value);  //  obj recebe o _sellerService passando como argumento o id
             if (obj == null)
             {
-                return RedirectToAction(nameof(Error), new { message = "Id not found" });
+                return RedirectToAction(nameof(Error), new { message = "Id não encontrado" });
             }
 
             List<Department> departments = await _departmentService.FindAllAsync(); // Se passou nos testes anteriores(Testes de não existe) leio os departamentos.
@@ -123,7 +123,7 @@ namespace VendasWebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Seller seller)
+        public async Task<IActionResult> Edit(int id, Seller seller)  // recebe tambem o objeto seller
         {
             if (!ModelState.IsValid)
             {
@@ -135,7 +135,7 @@ namespace VendasWebMvc.Controllers
 
             if (id != seller.Id)  // Testar se o id passado no método é diferente do vendedor. O Id do vendedor não pode ser |= do do URL da requisição.
             {
-                return RedirectToAction(nameof(Error), new { message = "Id mismatch" });  // Id não coincide
+                return RedirectToAction(nameof(Error), new { message = "Id não corresponde" });  // Id não coincide
             }
 
             try
@@ -163,12 +163,12 @@ namespace VendasWebMvc.Controllers
         }
 
 
-        public IActionResult Error(string message)   // Como não tem acesso à Base de Dados não é necessário ser assincrona.
+        public IActionResult Error(string message)   // Ação que recebe mensagem como parametro para retornar a view recebida. Como não tem acesso à Base de Dados não é necessário ser assincrona.
         {
             var viewModel = new ErrorViewModel()
             {
                 Message = message,
-                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier // Código para achar o Id interno da requisição.
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier // Código para achar o Id interno da requisição.  ?? - Operador de Coalescencia nula.
             };
             return View(viewModel);
         }

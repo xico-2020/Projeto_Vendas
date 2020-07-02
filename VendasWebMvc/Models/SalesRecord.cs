@@ -15,7 +15,7 @@ namespace VendasWebMvc.Models
 
         [Required(ErrorMessage = "{0} Obrigatório introduzir um valor!")]
         [DisplayFormat(DataFormatString = "{0:0,0.00}")]  // O formato do salário tem duas casas decimais.
-        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Only numbers alowed")]
+        [RegularExpression(@"^[0-9]*\.?[0-9]+$", ErrorMessage = "Apenas algarismos são permitidos")]
         [Display(Name = "Valor")]
         public double Amount { get; set; }
 
@@ -25,7 +25,7 @@ namespace VendasWebMvc.Models
         public Seller Seller { get; set; } // Ligação à Classe Seller (Cada Registo de Venda possui um Vendedor).
 
         [Display(Name = "Vendedor")]
-        public int SellerId { get; set; }  // Para garantir ao EntityFramework que vai existir um Id de Departamento, uma vez que um int não pode ser nulo. Declarando DepartmentId o FrameWork consegue relacionar com o Id de Seller e criar a BD corretamente.
+        public int SellerId { get; set; }  // Para garantir ao EntityFramework que vai existir um Id de Vendedor, uma vez que um int não pode ser nulo. Declarando DepartmentId o FrameWork consegue relacionar com o Id de Seller e criar a BD corretamente.
 
         
 

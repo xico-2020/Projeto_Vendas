@@ -11,8 +11,8 @@ namespace VendasWebMvc.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "{0} Obrigatório introduzir um valor!")]
-        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Characters are not allowed, only letters")]
-        [StringLength(60, MinimumLength = 3, ErrorMessage = "{0} size should be between {2} e {1}")]
+        [RegularExpression(@"^(([A-za-z]+[\s]{1}[A-za-z]+)|([A-Za-z]+))$", ErrorMessage = "Apenas letras são permitidas!")]
+        [StringLength(30, MinimumLength = 3, ErrorMessage = "{0} : O nome tem ser maior que {2}  e menor que {1}")]
         [Display(Name = "Nome Departamento")]
         public string Name { get; set; }
         public ICollection<Seller> Sellers { get; set; } = new List<Seller>();  // Ligação à Classe Seller (relação tem muitos...)

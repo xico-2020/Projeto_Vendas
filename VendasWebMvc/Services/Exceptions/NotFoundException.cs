@@ -7,7 +7,6 @@ namespace VendasWebMvc.Services.Exceptions
     {
         public NotFoundException(string message) : base(message)   // Construtor que recebe message e repassa para a classe base
         {
-
         }
     }
 }

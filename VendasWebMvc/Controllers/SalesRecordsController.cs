@@ -33,15 +33,6 @@ namespace VendasWebMvc.Controllers
 
         public async Task<IActionResult> Create()
         {
-            /*bool statusAll = returnedStatus.Equals(SaleStatus.All);
-
-            if (statusAll)
-            {
-                return RedirectToAction(nameof(Error), new { message = "All - Departamento não existe!" });
-
-            }*/
-
-
             var sellers = await _sellerService.FindAllAsync();
             var viewModel = new SalesRecordFormViewModel { Sellers = sellers }; // Inicia o SalesRecordFormViewModels com a Lista de Vendedores da linha anterior.
             return View(viewModel);  // Quando o Ecran de Registo de Vendas pela primeira vez, já tem os dados dos Vendedores existentes.  

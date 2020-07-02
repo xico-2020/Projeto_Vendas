@@ -54,7 +54,9 @@ namespace VendasWebMvc
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)  // Adicionado SeedingService. Como já está registado em cima na Injeção de Dependencias reconhece automatico.
         {
+           // var ptPT = new CultureInfo("pt-PT");
             var enUs = new CultureInfo("en-US");
+
             var localizationOptions = new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture(enUs),
@@ -62,8 +64,8 @@ namespace VendasWebMvc
                 SupportedUICultures = new List<CultureInfo> { enUs }
             };
 
-            app.UseRequestLocalization(localizationOptions);
-
+            app.UseRequestLocalization(localizationOptions);   //passa o objeto acima definido em var.
+           
             if (env.IsDevelopment())   // Se estiver no perfil de desenvolvimento ...
             {
                 app.UseDeveloperExceptionPage();

@@ -34,7 +34,7 @@ namespace VendasWebMvc.Services
         public async Task<Seller> FindByIdAsync(int id)  // Método assincrono
         {
             return await _context.Seller.Include(obj => obj.Department).FirstOrDefaultAsync(obj => obj.Id == id);  // Include(obj => obj.Department -> Para que na View Seller em Details seja possivel ver o Departamento.
-                                                    // Com o Include o EntityFrameWork junta os dados de duas tabelas.  Alterado para assincrono.
+                                                    // Com o Include o EntityFrameWork junta os dados de duas tabelas.  Alterado para assincrono. FirstOrDefault é do LINQ. (Chama-se a esta operção de include eager loading.)
         }
 
         public async Task RemoveAsync(int id)
@@ -42,7 +42,7 @@ namespace VendasWebMvc.Services
             try  // bloco try para tratar exeção personalizada ao apagar vendedor com vendas. Não permitido pela BD e causa exceção de violação de integridade.
             {
                 var obj = await _context.Seller.FindAsync(id);  // Alterado para sincrono. (adicionado o await e alterado para FindAsync em vez de Find.
-                _context.Seller.Remove(obj);
+                _context.Seller.Remove(obj);   // Remove do DBSet
                 await _context.SaveChangesAsync();  // Assincrono
             }
             catch (DbUpdateException e)
@@ -66,10 +66,11 @@ namespace VendasWebMvc.Services
                 await _context.SaveChangesAsync(); // Guarda as alterações. Assincrono.
 
             }
-            catch(DbConcurrecyException e)  // Intercepta a exceção do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
-                                            // Organização por camadas. Tratamento a nível se serviço. O Controlador(SellersController)  só trata a exceção lançada pelo serviço.
+            catch(DbConcurrencyException e)  // Intercepta a exceção de conflito de concorrencia gerada pela Base de Dados que gera uma exceção com o nome DdConcurren, do nível de acesso a dados e  relanço-a através da que criei a nível de serviço.
+                                            // Organização por camadas. Tratamento a nível se serviço. O Controlador(SellersController) só trata a exceção lançada pelo serviço.
             {
-                throw new DbConcurrecyException(e.Message);
+                throw new DbConcurrencyException(e.Message);   // Lança a exceção a nível de serviço ( a que criamos ) e envia a mensagem recebida da Base de Dados..
+                            // Aqui intercetamos uma exceção do nível de acesso a dados e relancamo-la na exceção a nível de serviço e assim o controller lida apenas com a exceção de serviço.
             }
         }
 
